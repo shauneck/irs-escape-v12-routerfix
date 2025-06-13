@@ -718,16 +718,386 @@ const BuildEscapePlan = () => {
       </div>
     </div>
   );
+  // Step 4: Restructure % Field
+  const renderStep4 = () => (
     <div className="max-w-4xl mx-auto">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-navy-900 mb-4">
-          Build Your IRS Escape Plan
+          Step 4: Restructure Planning
         </h1>
-        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-          Create your personalized tax optimization strategy with dynamic forecasting, 
-          strategy recommendations, and lifetime wealth projections.
+        <p className="text-xl text-gray-600">
+          What percentage of your financial structure are you willing to optimize?
         </p>
       </div>
+
+      <div className="bg-white rounded-xl shadow-lg p-8">
+        <h2 className="text-2xl font-bold text-navy-900 mb-6">Restructure Percentage</h2>
+        
+        <div className="max-w-md mx-auto">
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-4">
+              What percentage of your income/assets are you open to restructuring for tax optimization?
+            </label>
+            
+            <div className="relative">
+              <input
+                type="number"
+                name="restructurePercentage"
+                value={formData.restructurePercentage}
+                onChange={handleInputChange}
+                min="0"
+                max="100"
+                placeholder="25"
+                className="w-full px-4 py-3 pr-8 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-center text-xl font-bold"
+              />
+              <span className="absolute right-3 top-3 text-gray-500 text-xl">%</span>
+            </div>
+          </div>
+
+          {/* Visual slider */}
+          <div className="mb-8">
+            <input
+              type="range"
+              name="restructurePercentage"
+              value={formData.restructurePercentage || 0}
+              onChange={handleInputChange}
+              min="0"
+              max="100"
+              step="5"
+              className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              style={{
+                background: `linear-gradient(to right, #10b981 0%, #10b981 ${formData.restructurePercentage || 0}%, #e5e7eb ${formData.restructurePercentage || 0}%, #e5e7eb 100%)`
+              }}
+            />
+            <div className="flex justify-between text-xs text-gray-500 mt-2">
+              <span>0% (Conservative)</span>
+              <span>50% (Moderate)</span>
+              <span>100% (Aggressive)</span>
+            </div>
+          </div>
+
+          {/* Guidance based on percentage */}
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h3 className="font-bold text-gray-900 mb-2">
+              {formData.restructurePercentage >= 75 ? 'Aggressive Approach' :
+               formData.restructurePercentage >= 50 ? 'Balanced Approach' :
+               formData.restructurePercentage >= 25 ? 'Conservative Approach' : 'Minimal Changes'}
+            </h3>
+            <p className="text-sm text-gray-600">
+              {formData.restructurePercentage >= 75 ? 'Maximum tax optimization with comprehensive restructuring including advanced entity strategies, aggressive depreciation, and complex planning.' :
+               formData.restructurePercentage >= 50 ? 'Moderate restructuring focusing on high-impact strategies with manageable complexity and compliance.' :
+               formData.restructurePercentage >= 25 ? 'Simple optimizations using existing structures with minimal operational changes.' :
+               'Basic tax planning improvements without significant structural changes.'}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex justify-between mt-8">
+          <button
+            onClick={prevStep}
+            className="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50"
+          >
+            ← Previous
+          </button>
+          <button
+            onClick={nextStep}
+            disabled={!formData.restructurePercentage}
+            className={`px-8 py-3 rounded-lg font-bold transition-all duration-200 ${
+              formData.restructurePercentage
+                ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            Continue →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Step 5: Strategy Goal Selection
+  const renderStep5 = () => (
+    <div className="max-w-4xl mx-auto">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-bold text-navy-900 mb-4">
+          Step 5: Strategy Goals
+        </h1>
+        <p className="text-xl text-gray-600">
+          What are your primary tax planning objectives?
+        </p>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-lg p-8">
+        <h2 className="text-2xl font-bold text-navy-900 mb-6">Select Your Goals</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          {[
+            {
+              id: 'reduce-current-tax',
+              title: 'Reduce Current Year Tax',
+              description: 'Immediate tax savings for this tax year',
+              icon: '💰'
+            },
+            {
+              id: 'build-wealth',
+              title: 'Build Long-term Wealth',
+              description: 'Compound tax savings into long-term investments',
+              icon: '📈'
+            },
+            {
+              id: 'real-estate',
+              title: 'Real Estate Investment',
+              description: 'Leverage real estate for depreciation and cash flow',
+              icon: '🏠'
+            },
+            {
+              id: 'business-optimization',
+              title: 'Business Structure Optimization',
+              description: 'Optimize entity structure and business deductions',
+              icon: '🏢'
+            },
+            {
+              id: 'retirement-planning',
+              title: 'Retirement Planning',
+              description: 'Maximize retirement contributions and tax deferrals',
+              icon: '🎯'
+            },
+            {
+              id: 'estate-planning',
+              title: 'Estate & Legacy Planning',
+              description: 'Wealth transfer and estate tax minimization',
+              icon: '👨‍👩‍👧‍👦'
+            }
+          ].map((goal) => (
+            <div
+              key={goal.id}
+              onClick={() => handleGoalChange(goal.id)}
+              className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                formData.primaryGoals.includes(goal.id)
+                  ? 'border-emerald-500 bg-emerald-50'
+                  : 'border-gray-200 hover:border-emerald-300'
+              }`}
+            >
+              <div className="flex items-start">
+                <div className="text-2xl mr-4">{goal.icon}</div>
+                <div>
+                  <h3 className="font-bold text-navy-900 mb-1">{goal.title}</h3>
+                  <p className="text-sm text-gray-600">{goal.description}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="border-t pt-6">
+          <h3 className="text-lg font-bold text-navy-900 mb-4">Implementation Timeframe</h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              {
+                value: 'immediate',
+                title: 'Immediate (0-6 months)',
+                description: 'Need results before year-end'
+              },
+              {
+                value: 'short-term',
+                title: 'Short-term (6-18 months)',
+                description: 'Planned implementation over next year'
+              },
+              {
+                value: 'long-term',
+                title: 'Long-term (1-3 years)',
+                description: 'Strategic multi-year planning'
+              }
+            ].map((option) => (
+              <div
+                key={option.value}
+                onClick={() => setFormData(prev => ({ ...prev, timeframe: option.value }))}
+                className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                  formData.timeframe === option.value
+                    ? 'border-emerald-500 bg-emerald-50'
+                    : 'border-gray-200 hover:border-emerald-300'
+                }`}
+              >
+                <h4 className="font-bold text-navy-900 mb-1">{option.title}</h4>
+                <p className="text-xs text-gray-600">{option.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex justify-between mt-8">
+          <button
+            onClick={prevStep}
+            className="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50"
+          >
+            ← Previous
+          </button>
+          <button
+            onClick={nextStep}
+            disabled={formData.primaryGoals.length === 0}
+            className={`px-8 py-3 rounded-lg font-bold transition-all duration-200 ${
+              formData.primaryGoals.length > 0
+                ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            Continue →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Step 6: Forecast Settings
+  const renderStep6 = () => (
+    <div className="max-w-4xl mx-auto">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-bold text-navy-900 mb-4">
+          Step 6: Forecast Settings
+        </h1>
+        <p className="text-xl text-gray-600">
+          Configure your wealth projection parameters
+        </p>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-lg p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Forecast Controls */}
+          <div>
+            <h2 className="text-2xl font-bold text-navy-900 mb-6">Projection Settings</h2>
+            
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Forecast Time Horizon: {formData.forecastTimeHorizon} years
+                </label>
+                <input
+                  type="range"
+                  name="forecastTimeHorizon"
+                  value={formData.forecastTimeHorizon}
+                  onChange={handleInputChange}
+                  min="5"
+                  max="20"
+                  step="1"
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                  style={{
+                    background: `linear-gradient(to right, #10b981 0%, #10b981 ${((formData.forecastTimeHorizon - 5) / 15) * 100}%, #e5e7eb ${((formData.forecastTimeHorizon - 5) / 15) * 100}%, #e5e7eb 100%)`
+                  }}
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>5 years</span>
+                  <span>20 years</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Expected Return Rate: {formData.returnRate}%
+                </label>
+                <input
+                  type="range"
+                  name="returnRate"
+                  value={formData.returnRate}
+                  onChange={handleInputChange}
+                  min="3"
+                  max="12"
+                  step="0.5"
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                  style={{
+                    background: `linear-gradient(to right, #10b981 0%, #10b981 ${((formData.returnRate - 3) / 9) * 100}%, #e5e7eb ${((formData.returnRate - 3) / 9) * 100}%, #e5e7eb 100%)`
+                  }}
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>3% (Conservative)</span>
+                  <span>12% (Aggressive)</span>
+                </div>
+              </div>
+
+              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="reinvestTaxSavings"
+                    checked={formData.reinvestTaxSavings}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
+                  />
+                  <label className="ml-3 font-medium text-emerald-800">
+                    Enable Wealth Multiplier Loop
+                    <span className="block text-sm text-emerald-600 font-normal">
+                      Automatically reinvest tax savings for compounding growth
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Preview Calculations */}
+          <div>
+            <h2 className="text-2xl font-bold text-navy-900 mb-6">Quick Preview</h2>
+            
+            <div className="bg-gray-50 rounded-lg p-6">
+              <div className="space-y-4">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Annual Income:</span>
+                  <span className="font-bold text-navy-900">${formData.annualIncome}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Capital Available:</span>
+                  <span className="font-bold text-navy-900">${formData.capitalToAllocate}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Restructure %:</span>
+                  <span className="font-bold text-navy-900">{formData.restructurePercentage}%</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Time Horizon:</span>
+                  <span className="font-bold text-navy-900">{formData.forecastTimeHorizon} years</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Return Rate:</span>
+                  <span className="font-bold text-navy-900">{formData.returnRate}%</span>
+                </div>
+                <div className="border-t pt-4">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Selected Goals:</span>
+                    <span className="font-bold text-navy-900">{formData.primaryGoals.length}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <h3 className="font-bold text-blue-900 mb-2">💡 Forecast Assumptions</h3>
+              <ul className="text-sm text-blue-800 space-y-1">
+                <li>• Tax savings reinvested annually</li>
+                <li>• Returns compound over time horizon</li>
+                <li>• Strategies implemented gradually</li>
+                <li>• Tax rates remain relatively stable</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-between mt-8">
+          <button
+            onClick={prevStep}
+            className="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50"
+          >
+            ← Previous
+          </button>
+          <button
+            onClick={nextStep}
+            className="px-8 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-bold transition-all duration-200"
+          >
+            Continue →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Basic Information */}
