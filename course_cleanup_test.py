@@ -4,7 +4,7 @@ import json
 import sys
 
 # Get the backend URL from the frontend .env file
-BACKEND_URL = "https://283a2732-38ef-4270-9815-5a4dae4e3c3c.preview.emergentagent.com"
+BACKEND_URL = "https://340eb651-2cee-4dfb-be96-96e64a5cee1f.preview.emergentagent.com"
 
 class CourseCleanupTest(unittest.TestCase):
     """Test suite for verifying The Escape Blueprint course cleanup"""
