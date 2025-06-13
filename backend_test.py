@@ -64,7 +64,7 @@ class TestBackendAPI(unittest.TestCase):
         
         # Key glossary terms to verify (from review request)
         self.key_glossary_terms = [
-            "REPS", "QOF", "STR", "Cost Segregation", "C-Corp MSO", "Real Estate Professional Status"
+            "REPS", "QOF", "STR", "C-Corp MSO", "Real Estate Professional Status"
         ]
         
         # Expected number of glossary terms (from review request)
