@@ -99,7 +99,7 @@ class TestBackendAPI(unittest.TestCase):
             self.assertEqual(response.status_code, 200, "Failed to get courses")
             
             courses = response.json()
-            self.assertTrue(len(courses) >= 3, f"Expected at least 3 courses, got {len(courses)}")
+            self.assertEqual(len(courses), 3, f"Expected exactly 3 courses, got {len(courses)}")
             
             # Verify each course type exists and has the expected data
             course_types_found = set()
@@ -115,15 +115,7 @@ class TestBackendAPI(unittest.TestCase):
                                     f"Incorrect title for {course_type} course")
                     
                     # Check total lessons
-                    if course_type == 'w2':
-                        # Special case for W-2 course which has 10 lessons but total_lessons is 9
-                        self.assertEqual(course.get('total_lessons'), 9, 
-                                        f"Incorrect total_lessons for {course_type} course")
-                    elif course_type == 'business':
-                        # Special case for business course which has 9 lessons but total_lessons is 10
-                        self.assertEqual(course.get('total_lessons'), 10, 
-                                        f"Incorrect total_lessons for {course_type} course")
-                    else:
+                    if 'total_lessons' in expected:
                         self.assertEqual(course.get('total_lessons'), expected.get('total_lessons'), 
                                         f"Incorrect total_lessons for {course_type} course")
                     
