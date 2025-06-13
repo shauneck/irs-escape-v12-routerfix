@@ -157,6 +157,7 @@ const CourseViewer = ({ course, onBack }) => {
 const ModuleViewer = ({ module, course, onBack }) => {
   const [glossaryTerms, setGlossaryTerms] = useState([]);
   const [userXP, setUserXP] = useState(0);
+  const [selectedGlossaryTerm, setSelectedGlossaryTerm] = useState(null);
 
   useEffect(() => {
     fetchGlossaryTerms();
