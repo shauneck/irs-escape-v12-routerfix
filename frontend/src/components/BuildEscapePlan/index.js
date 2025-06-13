@@ -2263,6 +2263,30 @@ const BuildEscapePlan = () => {
       </div>
     </div>
   );
+  // Step 1: Input Form
+  const renderInputForm = () => (
+    <>
+      {currentStep === 1 && renderStep1()}
+      {currentStep === 2 && renderStep2()}
+      {currentStep === 3 && renderStep3()}
+    </>
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-6 py-12">
+        {currentStep === 1 && renderInputForm()}
+        {currentStep === 2 && renderStrategyDashboard()}
+        {currentStep === 3 && renderStrategyDetails()}
+        {currentStep === 4 && renderStep4()}
+        {currentStep === 5 && renderStep5()}
+        {currentStep === 6 && renderStep6()}
+        {currentStep === 7 && renderStep7()}
+        {currentStep === 8 && renderStep8()}
+        {currentStep === 9 && renderStep9()}
+      </div>
+    </div>
+  );
 };
 
 export default BuildEscapePlan;
