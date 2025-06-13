@@ -16,7 +16,7 @@ with open('/app/frontend/.env', 'r') as f:
     if match:
         BACKEND_URL = match.group(1).strip()
     else:
-        BACKEND_URL = "https://340eb651-2cee-4dfb-be96-96e64a5cee1f.preview.emergentagent.com"
+        BACKEND_URL = "https://34039d22-8ab3-414d-aca7-37a7d49cd299.preview.emergentagent.com"
 
 # Ensure the URL ends with /api for all API requests
 API_URL = f"{BACKEND_URL}/api"
