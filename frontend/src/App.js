@@ -495,6 +495,74 @@ const ModuleViewer = ({ module, course, onBack }) => {
             )}
           </div>
         </div>
+
+        {/* Module Content with Glossary Highlighting */}
+        <div className="mt-8">
+          <div className="bg-white rounded-lg shadow-lg p-8">
+            <h2 className="text-2xl font-bold text-navy-900 mb-6">Module Content</h2>
+            <div className="prose prose-lg max-w-none">
+              <GlossaryTermHighlighter 
+                content={module.content}
+                glossaryTerms={glossaryTerms}
+                onTermClick={handleGlossaryTermClick}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Glossary Term Modal */}
+        {selectedGlossaryTerm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl">
+              <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-start">
+                <div>
+                  <h3 className="text-2xl font-bold text-navy-900">{selectedGlossaryTerm.term}</h3>
+                  <span className="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm font-medium mt-2">
+                    {selectedGlossaryTerm.category}
+                  </span>
+                </div>
+                <button 
+                  onClick={() => setSelectedGlossaryTerm(null)}
+                  className="text-gray-400 hover:text-gray-600 p-1"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="px-6 py-4 space-y-4">
+                <div>
+                  <h4 className="font-bold text-gray-900 mb-2">Definition</h4>
+                  <p className="text-gray-700">{selectedGlossaryTerm.definition}</p>
+                </div>
+                
+                {selectedGlossaryTerm.plain_english && (
+                  <div>
+                    <h4 className="font-bold text-gray-900 mb-2">Plain English</h4>
+                    <p className="text-gray-700">{selectedGlossaryTerm.plain_english}</p>
+                  </div>
+                )}
+
+                {selectedGlossaryTerm.key_benefit && (
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+                    <h4 className="font-bold text-emerald-800 mb-2">💡 Key Benefit</h4>
+                    <p className="text-emerald-700">{selectedGlossaryTerm.key_benefit}</p>
+                  </div>
+                )}
+              </div>
+              
+              <div className="sticky bottom-0 bg-gray-50 px-6 py-3 border-t">
+                <button 
+                  onClick={() => setSelectedGlossaryTerm(null)}
+                  className="w-full bg-emerald-500 text-white py-2 px-4 rounded-lg hover:bg-emerald-600 transition-colors font-medium"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
