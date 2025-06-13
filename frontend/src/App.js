@@ -302,6 +302,8 @@ const ModuleViewer = ({ module, course, onBack }) => {
   const keyTerms = getModuleKeyTerms(module.order_index, course.type);
 
   const handleGlossaryTermClick = async (term) => {
+    setSelectedGlossaryTerm(term);
+    
     try {
       // Award XP for viewing glossary term
       await fetch(`${API_BASE_URL}/api/users/xp/glossary`, {
@@ -312,9 +314,6 @@ const ModuleViewer = ({ module, course, onBack }) => {
           term_id: term.id || term.term
         })
       });
-      
-      // Show term details (simplified modal)
-      alert(`${term.term}\n\n${term.plain_english || term.definition}`);
     } catch (error) {
       console.error('Failed to award XP:', error);
     }
