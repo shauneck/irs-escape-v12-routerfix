@@ -817,13 +817,16 @@ function PlaybookGenerator() {
 
   const nextStep = () => {
     // Handle conditional step flow
-    if (currentStep === 4) {
-      // Business partners question - skip for W-2 employees
-      if (formData.incomeType === 'w2-employee') {
-        setCurrentStep(5); // Go to strategy goals
+    if (currentStep === 3) {
+      // After entity structure, check if we should skip Step 4 (business partners)
+      if (formData.incomeType === 'w2-employee' || formData.incomeType === '1099-contractor') {
+        setCurrentStep(5); // Skip Step 4 for W-2 and 1099 only users
       } else {
-        setCurrentStep(5); // Business owners and blended continue to strategy goals
+        setCurrentStep(4); // Show Step 4 for business owners and mixed income
       }
+    } else if (currentStep === 4) {
+      // Business partners question completed, go to strategy goals
+      setCurrentStep(5);
     } else if (currentStep === 5) {
       // Strategy goals completed, go to stock compensation or skip
       if (formData.incomeType === 'business-owner') {
