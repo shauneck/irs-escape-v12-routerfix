@@ -42,9 +42,12 @@ const BuildEscapePlan = () => {
   });
 
   const [forecastData, setForecastData] = useState(null);
-  const [strategies, setStrategies] = useState([]);
-  const [selectedStrategies, setSelectedStrategies] = useState([]);
-  const [implementationProgress, setImplementationProgress] = useState({});
+  const [strategies, setStrategies] = useState({
+    setup: [],
+    deductions: [],
+    exit: []
+  });
+  const [implementationStatus, setImplementationStatus] = useState({});
   const [loading, setLoading] = useState(false);
   const [glossaryTerms, setGlossaryTerms] = useState([]);
 
@@ -64,30 +67,66 @@ const BuildEscapePlan = () => {
     }
   };
 
+  // Utility function to format numbers with commas
+  const formatNumber = (num) => {
+    if (!num) return '';
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
+
+  // Utility function to parse comma-formatted numbers
+  const parseFormattedNumber = (value) => {
+    return parseFloat(value.replace(/,/g, '')) || 0;
+  };
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
+    
+    if (name === 'annualIncome' || name === 'capitalToAllocate' || name === 'stockCompValue') {
+      // Handle comma-formatted number inputs
+      const numericValue = value.replace(/[^\d]/g, '');
+      setFormData(prev => ({
+        ...prev,
+        [name]: formatNumber(numericValue)
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: type === 'checkbox' ? checked : value
+      }));
+    }
   };
 
   const handleGoalChange = (goal) => {
     setFormData(prev => ({
       ...prev,
-      goals: prev.goals.includes(goal) 
-        ? prev.goals.filter(g => g !== goal)
-        : [...prev.goals, goal]
+      primaryGoals: prev.primaryGoals.includes(goal) 
+        ? prev.primaryGoals.filter(g => g !== goal)
+        : [...prev.primaryGoals, goal]
     }));
   };
 
-  const handleStrategyChange = (strategy) => {
-    setFormData(prev => ({
+  const handleStrategyStatusChange = (strategyId, status) => {
+    setImplementationStatus(prev => ({
       ...prev,
-      currentStrategies: prev.currentStrategies.includes(strategy) 
-        ? prev.currentStrategies.filter(s => s !== strategy)
-        : [...prev.currentStrategies, strategy]
+      [strategyId]: status
     }));
+  };
+
+  // Navigation functions
+  const nextStep = () => {
+    if (currentStep < 9) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const goToStep = (step) => {
+    setCurrentStep(step);
   };
 
   // Strategy Generation Logic
