@@ -878,11 +878,11 @@ function PlaybookGenerator() {
       case 2: return formData.incomeRange !== '';
       case 3: return formData.entityStructure !== '';
       case 4:
-        // Business partners question only required for business owners
+        // Business partners question only required for business owners and mixed income
         if (formData.incomeType === 'business-owner' || formData.incomeType === 'blended') {
           return formData.hasBusinessPartners !== null;
         }
-        return true; // Skip this step for W-2 employees
+        return true; // Skip this step for W-2 and 1099 only users
       case 5: return formData.strategyGoals.length > 0;
       case 6:
         // Stock compensation question only for W-2 and blended
