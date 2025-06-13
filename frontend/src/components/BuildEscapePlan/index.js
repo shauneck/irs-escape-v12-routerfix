@@ -480,8 +480,9 @@ function PlaybookGenerator() {
     const deductionStrategies = [];
     const exitPlanning = [];
 
-    // Setup & Structure Strategies
-    if (data.entityStructure === 'None' || data.entityStructure === 'Not sure') {
+    // Setup & Structure Strategies - Only for business owners or mixed income
+    if ((data.incomeType === 'business-owner' || data.incomeType === 'blended') && 
+        (data.entityStructure === 'None' || data.entityStructure === 'Not sure')) {
       setupStructure.push({
         id: 'entity-formation',
         title: 'Business Entity Formation',
