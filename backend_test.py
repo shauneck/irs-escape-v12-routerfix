@@ -62,10 +62,13 @@ class TestBackendAPI(unittest.TestCase):
             "Advanced Strategy"
         ]
         
-        # Key glossary terms to verify
+        # Key glossary terms to verify (from review request)
         self.key_glossary_terms = [
-            "REPS", "QOF", "STR", "C-Corp MSO", "Real Estate Professional Status"
+            "REPS", "QOF", "STR", "Cost Segregation", "C-Corp MSO", "Real Estate Professional Status"
         ]
+        
+        # Expected number of glossary terms (from review request)
+        self.expected_glossary_terms_count = 53
     
     def get_course_ids(self):
         """Get course IDs for all courses"""
