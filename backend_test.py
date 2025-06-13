@@ -357,6 +357,12 @@ class TestBackendAPI(unittest.TestCase):
             self.fail("No course IDs available for testing")
         
         all_passed = True
+        expected_quiz_counts = {
+            'primer': 15,
+            'w2': 28,
+            'business': 16
+        }
+        
         for course_type, course_id in self.course_ids.items():
             try:
                 print(f"\nTesting {course_type.upper()} course quiz (ID: {course_id}):")
@@ -365,6 +371,12 @@ class TestBackendAPI(unittest.TestCase):
                 
                 questions = response.json()
                 print(f"Found {len(questions)} quiz questions for {course_type} course")
+                
+                # Verify the correct number of quiz questions
+                expected_count = expected_quiz_counts.get(course_type)
+                if expected_count:
+                    self.assertEqual(len(questions), expected_count, 
+                                    f"Expected {expected_count} quiz questions for {course_type} course, got {len(questions)}")
                 
                 if len(questions) > 0:
                     # Verify quiz questions have the required fields
