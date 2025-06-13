@@ -500,6 +500,70 @@ const ModuleViewer = ({ module, course, onBack }) => {
   );
 };
 
+// GlossaryTermHighlighter Component for In-Course Term Linking
+const GlossaryTermHighlighter = ({ content, glossaryTerms, onTermClick }) => {
+  if (!content || !glossaryTerms || glossaryTerms.length === 0) {
+    return <div>{content}</div>;
+  }
+
+  // Create a map of terms for quick lookup
+  const termMap = glossaryTerms.reduce((acc, term) => {
+    acc[term.term.toLowerCase()] = term;
+    return acc;
+  }, {});
+
+  // Split content into words and highlight glossary terms
+  const highlightTerms = (text) => {
+    if (!text) return text;
+    
+    // Sort terms by length (longest first) to avoid partial matches
+    const sortedTerms = Object.keys(termMap).sort((a, b) => b.length - a.length);
+    
+    let highlightedText = text;
+    const highlightedTermsInText = new Set();
+    
+    sortedTerms.forEach(term => {
+      const regex = new RegExp(`\\b${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
+      const matches = text.match(regex);
+      
+      if (matches && !highlightedTermsInText.has(term.toLowerCase())) {
+        // Only highlight the first occurrence of each term
+        highlightedText = highlightedText.replace(regex, (match) => {
+          highlightedTermsInText.add(term.toLowerCase());
+          return `<span class="glossary-term" data-term="${term}">${match}</span>`;
+        });
+      }
+    });
+    
+    return highlightedText;
+  };
+
+  const processedContent = highlightTerms(content);
+
+  useEffect(() => {
+    // Add click handlers to highlighted terms
+    const handleTermClick = (e) => {
+      if (e.target.classList.contains('glossary-term')) {
+        const termName = e.target.getAttribute('data-term');
+        const term = termMap[termName.toLowerCase()];
+        if (term && onTermClick) {
+          onTermClick(term);
+        }
+      }
+    };
+
+    document.addEventListener('click', handleTermClick);
+    return () => document.removeEventListener('click', handleTermClick);
+  }, [termMap, onTermClick]);
+
+  return (
+    <div 
+      dangerouslySetInnerHTML={{ __html: processedContent }}
+      className="glossary-highlighted-content"
+    />
+  );
+};
+
 // GlossarySection Component
 const GlossarySection = ({ glossaryTerms }) => {
   const [searchTerm, setSearchTerm] = useState('');
