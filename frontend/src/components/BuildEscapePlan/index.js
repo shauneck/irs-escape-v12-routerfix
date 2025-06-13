@@ -1,22 +1,58 @@
 import React, { useState, useEffect } from 'react';
 
+const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
+
 const BuildEscapePlan = () => {
+  const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
+    // Basic Info
     income: '',
     incomeType: 'w2',
     currentTaxRate: '',
+    age: '',
+    retirementAge: 65,
+    
+    // Goals & Situation
     goals: [],
-    timeframe: '1-year'
+    currentStrategies: [],
+    realEstateStatus: 'none',
+    businessOwnership: 'none',
+    investmentProfile: 'moderate',
+    
+    // Forecast Settings
+    returnRate: 6,
+    reinvestmentEnabled: true,
+    timeHorizon: 30
   });
 
-  const [plan, setPlan] = useState(null);
+  const [forecastData, setForecastData] = useState(null);
+  const [strategies, setStrategies] = useState([]);
+  const [selectedStrategies, setSelectedStrategies] = useState([]);
+  const [implementationProgress, setImplementationProgress] = useState({});
   const [loading, setLoading] = useState(false);
+  const [glossaryTerms, setGlossaryTerms] = useState([]);
+
+  useEffect(() => {
+    fetchGlossaryTerms();
+  }, []);
+
+  const fetchGlossaryTerms = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/glossary`);
+      if (response.ok) {
+        const terms = await response.json();
+        setGlossaryTerms(terms);
+      }
+    } catch (error) {
+      console.error('Failed to load glossary terms:', error);
+    }
+  };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     }));
   };
 
@@ -29,30 +65,13 @@ const BuildEscapePlan = () => {
     }));
   };
 
-  const generatePlan = async () => {
-    setLoading(true);
-    
-    // Simulate API call - this would integrate with a real tax planning service
-    setTimeout(() => {
-      const mockPlan = {
-        projectedSavings: Math.floor(parseFloat(formData.income) * 0.15),
-        strategies: [
-          'Real Estate Professional Status (REPS) Qualification',
-          'Strategic Deduction Portfolio',
-          'Tax-Advantaged Investment Repositioning',
-          'Entity Structure Optimization'
-        ],
-        timeline: formData.timeframe,
-        nextSteps: [
-          'Complete detailed income analysis',
-          'Evaluate REPS qualification potential',
-          'Implement strategic deduction framework',
-          'Monitor and optimize quarterly'
-        ]
-      };
-      setPlan(mockPlan);
-      setLoading(false);
-    }, 2000);
+  const handleStrategyChange = (strategy) => {
+    setFormData(prev => ({
+      ...prev,
+      currentStrategies: prev.currentStrategies.includes(strategy) 
+        ? prev.currentStrategies.filter(s => s !== strategy)
+        : [...prev.currentStrategies, strategy]
+    }));
   };
 
   return (
