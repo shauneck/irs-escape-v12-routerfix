@@ -311,6 +311,11 @@ const EDUCATIONAL_CONTENT = {
     module: 'Module 4: Advanced Planning',
     glossary: ['Installment Sale', 'Capital Gains Deferral'],
     caseStudy: 'Business Sale Installment Strategy'
+  },
+  'Loan-Based Split Dollar Life Insurance': {
+    module: 'Module 2: Entity Optimization',
+    glossary: ['Split Dollar', 'Life Insurance', 'C-Corp', 'Retained Earnings'],
+    caseStudy: 'C-Corp Split Dollar Strategy'
   }
 };
 
