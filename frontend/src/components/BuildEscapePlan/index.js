@@ -437,8 +437,287 @@ const BuildEscapePlan = () => {
     }
   };
 
-  // Step 1: Input Form
-  const renderInputForm = () => (
+  // Step 1: Income Type Selection
+  const renderStep1 = () => (
+    <div className="max-w-4xl mx-auto">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-bold text-navy-900 mb-4">
+          Step 1: Income Type
+        </h1>
+        <p className="text-xl text-gray-600">
+          Let's start by understanding your primary income structure
+        </p>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-lg p-8">
+        <h2 className="text-2xl font-bold text-navy-900 mb-6">What's your primary income type?</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[
+            {
+              value: 'w2',
+              title: 'W-2 Employee',
+              description: 'Primary income from employment, stock compensation, bonuses',
+              icon: '👔'
+            },
+            {
+              value: 'mixed',
+              title: 'Mixed Income',
+              description: 'Combination of W-2 and business/investment income',
+              icon: '📊'
+            },
+            {
+              value: 'business',
+              title: 'Business Owner',
+              description: 'Primary income from business ownership, K-1s, self-employment',
+              icon: '🏢'
+            }
+          ].map((option) => (
+            <div
+              key={option.value}
+              onClick={() => setFormData(prev => ({ ...prev, incomeType: option.value }))}
+              className={`p-6 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                formData.incomeType === option.value
+                  ? 'border-emerald-500 bg-emerald-50'
+                  : 'border-gray-200 hover:border-emerald-300'
+              }`}
+            >
+              <div className="text-center">
+                <div className="text-4xl mb-4">{option.icon}</div>
+                <h3 className="text-lg font-bold text-navy-900 mb-2">{option.title}</h3>
+                <p className="text-sm text-gray-600">{option.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex justify-end mt-8">
+          <button
+            onClick={nextStep}
+            disabled={!formData.incomeType}
+            className={`px-8 py-3 rounded-lg font-bold transition-all duration-200 ${
+              formData.incomeType
+                ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            Continue →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Step 2: Business Partner Logic (conditional)
+  const renderStep2 = () => {
+    // Skip this step for W-2 only income
+    if (formData.incomeType === 'w2') {
+      React.useEffect(() => {
+        nextStep();
+      }, []);
+      return null;
+    }
+
+    return (
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-navy-900 mb-4">
+            Step 2: Business Structure
+          </h1>
+          <p className="text-xl text-gray-600">
+            Tell us about your business ownership structure
+          </p>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-lg p-8">
+          <h2 className="text-2xl font-bold text-navy-900 mb-6">Do you have business partners?</h2>
+          
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div
+                onClick={() => setFormData(prev => ({ ...prev, hasBusinessPartner: false }))}
+                className={`p-6 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                  formData.hasBusinessPartner === false
+                    ? 'border-emerald-500 bg-emerald-50'
+                    : 'border-gray-200 hover:border-emerald-300'
+                }`}
+              >
+                <h3 className="text-lg font-bold text-navy-900 mb-2">Solo Owner</h3>
+                <p className="text-sm text-gray-600">Single owner or family-controlled business</p>
+              </div>
+              
+              <div
+                onClick={() => setFormData(prev => ({ ...prev, hasBusinessPartner: true }))}
+                className={`p-6 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                  formData.hasBusinessPartner === true
+                    ? 'border-emerald-500 bg-emerald-50'
+                    : 'border-gray-200 hover:border-emerald-300'
+                }`}
+              >
+                <h3 className="text-lg font-bold text-navy-900 mb-2">Multiple Partners</h3>
+                <p className="text-sm text-gray-600">Business with multiple owners or partners</p>
+              </div>
+            </div>
+
+            {formData.hasBusinessPartner && (
+              <div className="mt-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Current Partnership Structure
+                </label>
+                <select
+                  name="partnerStructure"
+                  value={formData.partnerStructure}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                >
+                  <option value="">Select structure</option>
+                  <option value="equal-partners">Equal partners</option>
+                  <option value="majority-minority">Majority/minority structure</option>
+                  <option value="silent-partners">Silent partners</option>
+                  <option value="family-business">Family business</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-between mt-8">
+            <button
+              onClick={prevStep}
+              className="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50"
+            >
+              ← Previous
+            </button>
+            <button
+              onClick={nextStep}
+              disabled={formData.hasBusinessPartner === null || (formData.hasBusinessPartner && !formData.partnerStructure)}
+              className={`px-8 py-3 rounded-lg font-bold transition-all duration-200 ${
+                (formData.hasBusinessPartner !== null && (!formData.hasBusinessPartner || formData.partnerStructure))
+                  ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+            >
+              Continue →
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Step 3: Capital to Allocate
+  const renderStep3 = () => (
+    <div className="max-w-4xl mx-auto">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-bold text-navy-900 mb-4">
+          Step 3: Financial Profile
+        </h1>
+        <p className="text-xl text-gray-600">
+          Help us understand your income and investment capacity
+        </p>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-lg p-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Annual Income *
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-3 text-gray-500">$</span>
+              <input
+                type="text"
+                name="annualIncome"
+                value={formData.annualIncome}
+                onChange={handleInputChange}
+                placeholder="250,000"
+                className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              />
+            </div>
+            <p className="text-xs text-gray-500 mt-1">Enter your total annual income before taxes</p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Capital to Allocate *
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-3 text-gray-500">$</span>
+              <input
+                type="text"
+                name="capitalToAllocate"
+                value={formData.capitalToAllocate}
+                onChange={handleInputChange}
+                placeholder="50,000"
+                className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              />
+            </div>
+            <p className="text-xs text-gray-500 mt-1">Amount available for tax strategies and investments</p>
+          </div>
+        </div>
+
+        {/* Stock Compensation Question for W-2 earners */}
+        {formData.incomeType === 'w2' && (
+          <div className="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
+            <h3 className="text-lg font-bold text-navy-900 mb-4">Stock Compensation</h3>
+            
+            <div className="flex items-center mb-4">
+              <input
+                type="checkbox"
+                name="hasStockCompensation"
+                checked={formData.hasStockCompensation}
+                onChange={handleInputChange}
+                className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
+              />
+              <label className="ml-3 text-sm text-gray-700">
+                I receive stock compensation (RSUs, Stock Options, ESPP)
+              </label>
+            </div>
+
+            {formData.hasStockCompensation && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Annual Stock Compensation Value
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-3 text-gray-500">$</span>
+                  <input
+                    type="text"
+                    name="stockCompValue"
+                    value={formData.stockCompValue}
+                    onChange={handleInputChange}
+                    placeholder="100,000"
+                    className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Estimated annual value of stock grants and options</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="flex justify-between mt-8">
+          <button
+            onClick={prevStep}
+            className="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50"
+          >
+            ← Previous
+          </button>
+          <button
+            onClick={nextStep}
+            disabled={!formData.annualIncome || !formData.capitalToAllocate}
+            className={`px-8 py-3 rounded-lg font-bold transition-all duration-200 ${
+              formData.annualIncome && formData.capitalToAllocate
+                ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            Continue →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
     <div className="max-w-4xl mx-auto">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-navy-900 mb-4">
