@@ -667,7 +667,8 @@ function PlaybookGenerator() {
     // Adjust based on forecasting inputs
     const businessProfit = parseInt(forecastingData.businessProfit) || 0;
     const capitalAvailable = parseInt(forecastingData.capitalAvailable) || 0;
-    const restructurePercent = parseInt(forecastingData.restructurePercent) || 0;
+    const lifestylePercent = parseInt(forecastingData.restructurePercent) || 0;
+    const optimizationPercent = 100 - lifestylePercent; // Invert the percentage
 
     if (businessProfit > 500000) {
       baseSavingsMin += 3;
@@ -679,7 +680,7 @@ function PlaybookGenerator() {
       baseSavingsMax += 5;
     }
 
-    if (restructurePercent > 50) {
+    if (optimizationPercent > 50) { // Use optimization percentage instead of restructure
       baseSavingsMin += 3;
       baseSavingsMax += 7;
     }
