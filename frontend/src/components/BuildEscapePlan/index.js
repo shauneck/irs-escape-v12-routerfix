@@ -852,6 +852,8 @@ function PlaybookGenerator() {
       } else {
         setCurrentStep(7); // Go back to RSU percentage
       }
+    } else if (currentStep === 7) {
+      setCurrentStep(6); // Go back to stock comp question
     } else if (currentStep === 6) {
       if (formData.incomeType === 'w2-employee') {
         setCurrentStep(5); // Skip business partners for W-2
