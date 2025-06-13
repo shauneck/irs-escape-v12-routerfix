@@ -505,35 +505,116 @@ const GlossarySection = ({ glossaryTerms }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedTerm, setSelectedTerm] = useState(null);
+  const [viewedTerms, setViewedTerms] = useState(() => {
+    const saved = localStorage.getItem('viewedGlossaryTerms');
+    return saved ? JSON.parse(saved) : {};
+  });
+  const [userXP, setUserXP] = useState(() => {
+    const saved = localStorage.getItem('userXP');
+    return saved ? parseInt(saved) : 0;
+  });
 
   const categories = ['all', ...new Set(glossaryTerms?.map(term => term.category) || [])];
   
   const filteredTerms = glossaryTerms?.filter(term => {
     const matchesSearch = term.term.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         term.definition?.toLowerCase().includes(searchTerm.toLowerCase());
+                         term.definition?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         term.plain_english?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || term.category === selectedCategory;
     return matchesSearch && matchesCategory;
   }) || [];
 
+  const resetFilter = () => {
+    setSelectedCategory('all');
+    setSearchTerm('');
+  };
+
+  const handleTermClick = async (term) => {
+    setSelectedTerm(term);
+    
+    // Award XP if this is the first time viewing this term
+    if (!viewedTerms[term.id]) {
+      const newViewedTerms = { ...viewedTerms, [term.id]: true };
+      const newXP = userXP + 10;
+      
+      setViewedTerms(newViewedTerms);
+      setUserXP(newXP);
+      
+      // Save to localStorage
+      localStorage.setItem('viewedGlossaryTerms', JSON.stringify(newViewedTerms));
+      localStorage.setItem('userXP', newXP.toString());
+
+      // Send XP to backend if endpoint exists
+      try {
+        await fetch(`${API_BASE_URL}/api/users/xp/glossary`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            term_id: term.id,
+            term_name: term.term,
+            xp_earned: 10 
+          })
+        });
+      } catch (error) {
+        console.log('XP tracking not available:', error);
+      }
+    }
+  };
+
+  const getLinkedModules = (term) => {
+    // Extract module information from case study or related content
+    const modules = [];
+    if (term.structure?.includes('Module')) {
+      const moduleMatch = term.structure.match(/Module \d+[^,.]*/g);
+      if (moduleMatch) modules.push(...moduleMatch);
+    }
+    if (term.implementation?.includes('Module')) {
+      const moduleMatch = term.implementation.match(/Module \d+[^,.]*/g);
+      if (moduleMatch) modules.push(...moduleMatch);
+    }
+    return [...new Set(modules)]; // Remove duplicates
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
+      {/* XP Display */}
+      <div className="mb-6 bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-bold text-emerald-800">Your Learning Progress</h3>
+            <p className="text-emerald-600">Earn 10 XP for each new term you explore</p>
+          </div>
+          <div className="text-right">
+            <div className="text-3xl font-bold text-emerald-600">{userXP} XP</div>
+            <div className="text-sm text-emerald-700">
+              {Object.keys(viewedTerms).length} of {glossaryTerms?.length || 0} terms viewed
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Search and Filter Controls */}
       <div className="mb-6">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
-            <input
-              type="text"
-              placeholder="Search terms..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-            />
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search terms, definitions, or explanations..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              />
+              <svg className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
           </div>
-          <div className="sm:w-48">
+          <div className="sm:w-64">
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
             >
               {categories.map(category => (
                 <option key={category} value={category}>
@@ -542,75 +623,245 @@ const GlossarySection = ({ glossaryTerms }) => {
               ))}
             </select>
           </div>
+          {(selectedCategory !== 'all' || searchTerm) && (
+            <button
+              onClick={resetFilter}
+              className="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors whitespace-nowrap"
+            >
+              Reset Filters
+            </button>
+          )}
         </div>
       </div>
 
+      {/* Active Filters Display */}
+      {(selectedCategory !== 'all' || searchTerm) && (
+        <div className="mb-4 flex flex-wrap gap-2">
+          {searchTerm && (
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-emerald-100 text-emerald-700">
+              Search: "{searchTerm}"
+              <button onClick={() => setSearchTerm('')} className="ml-2 text-emerald-500 hover:text-emerald-700">
+                ×
+              </button>
+            </span>
+          )}
+          {selectedCategory !== 'all' && (
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-700">
+              Category: {selectedCategory}
+              <button onClick={() => setSelectedCategory('all')} className="ml-2 text-blue-500 hover:text-blue-700">
+                ×
+              </button>
+            </span>
+          )}
+        </div>
+      )}
+
       {/* Results Summary */}
-      <div className="mb-4">
+      <div className="mb-6">
         <p className="text-gray-600">
           Showing {filteredTerms.length} of {glossaryTerms?.length || 0} terms
+          {(selectedCategory !== 'all' || searchTerm) && (
+            <span className="ml-2 text-sm">
+              ({glossaryTerms?.length - filteredTerms.length} filtered out)
+            </span>
+          )}
         </p>
       </div>
 
       {/* Terms Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredTerms.map((term, index) => (
           <div 
             key={term.id || index}
-            onClick={() => setSelectedTerm(term)}
-            className="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 cursor-pointer transition-colors duration-200"
+            onClick={() => handleTermClick(term)}
+            className={`relative bg-white border-2 rounded-xl p-6 hover:shadow-lg cursor-pointer transition-all duration-200 ${
+              viewedTerms[term.id] ? 'border-emerald-200 bg-emerald-50' : 'border-gray-200 hover:border-emerald-300'
+            }`}
           >
-            <h3 className="font-bold text-navy-900 mb-2">{term.term}</h3>
-            <span className="inline-block bg-emerald-100 text-emerald-600 px-2 py-1 rounded text-xs font-medium mb-2">
+            {/* XP Badge */}
+            {viewedTerms[term.id] && (
+              <div className="absolute top-3 right-3">
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-500 text-white">
+                  +10 XP
+                </span>
+              </div>
+            )}
+            
+            <h3 className="font-bold text-navy-900 mb-3 text-lg leading-tight">{term.term}</h3>
+            
+            <span className="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-medium mb-3">
               {term.category}
             </span>
-            <p className="text-gray-600 text-sm line-clamp-3">
+            
+            <p className="text-gray-600 text-sm line-clamp-3 mb-4">
               {term.plain_english || term.definition}
             </p>
+            
+            {term.key_benefit && (
+              <div className="border-t pt-3">
+                <p className="text-xs text-emerald-600 font-medium">
+                  💡 Key Benefit: {term.key_benefit.substring(0, 80)}...
+                </p>
+              </div>
+            )}
           </div>
         ))}
       </div>
 
       {/* No Results */}
       {filteredTerms.length === 0 && (
-        <div className="text-center py-8">
-          <p className="text-gray-500">No terms found matching your criteria.</p>
+        <div className="text-center py-12">
+          <div className="text-gray-400 mb-4">
+            <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.29-1.263-5.365-3.138m-.133-8.724C7.748 2.49 9.777 2 12 2s4.252.49 5.498 1.138" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No terms found</h3>
+          <p className="text-gray-500 mb-4">Try adjusting your search or filter criteria.</p>
+          {(selectedCategory !== 'all' || searchTerm) && (
+            <button
+              onClick={resetFilter}
+              className="text-emerald-600 hover:text-emerald-700 font-medium"
+            >
+              Clear all filters
+            </button>
+          )}
         </div>
       )}
 
       {/* Term Detail Modal */}
       {selectedTerm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-96 overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-start mb-4">
-                <h2 className="text-2xl font-bold text-navy-900">{selectedTerm.term}</h2>
-                <button 
-                  onClick={() => setSelectedTerm(null)}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+          <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-white border-b px-8 py-6 flex justify-between items-start">
+              <div>
+                <h2 className="text-3xl font-bold text-navy-900 mb-2">{selectedTerm.term}</h2>
+                <span className="inline-block bg-emerald-100 text-emerald-700 px-4 py-2 rounded-full text-sm font-medium">
+                  {selectedTerm.category}
+                </span>
+                {viewedTerms[selectedTerm.id] && (
+                  <span className="ml-3 inline-block bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-medium">
+                    ✓ 10 XP Earned
+                  </span>
+                )}
+              </div>
+              <button 
+                onClick={() => setSelectedTerm(null)}
+                className="text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-100"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            {/* Modal Content */}
+            <div className="px-8 py-6 space-y-8">
+              {/* Definition */}
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Definition</h3>
+                <p className="text-gray-700 text-lg leading-relaxed">{selectedTerm.definition}</p>
               </div>
               
-              <span className="inline-block bg-emerald-100 text-emerald-600 px-3 py-1 rounded-full text-sm font-medium mb-4">
-                {selectedTerm.category}
-              </span>
-              
-              <div className="space-y-4">
+              {/* Plain English Explanation */}
+              {selectedTerm.plain_english && (
                 <div>
-                  <h3 className="font-bold text-gray-900 mb-2">Definition</h3>
-                  <p className="text-gray-700">{selectedTerm.definition}</p>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">Plain English Explanation</h3>
+                  <p className="text-gray-700 text-lg leading-relaxed">{selectedTerm.plain_english}</p>
                 </div>
-                
-                {selectedTerm.plain_english && (
-                  <div>
-                    <h3 className="font-bold text-gray-900 mb-2">Plain English</h3>
-                    <p className="text-gray-700">{selectedTerm.plain_english}</p>
+              )}
+              
+              {/* Key Benefit */}
+              {selectedTerm.key_benefit && (
+                <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-emerald-800 mb-4">💡 Key Benefit</h3>
+                  <p className="text-emerald-700 text-lg leading-relaxed font-medium">
+                    {selectedTerm.key_benefit}
+                  </p>
+                </div>
+              )}
+              
+              {/* Real-World Case Study */}
+              {(selectedTerm.client_name || selectedTerm.structure || selectedTerm.implementation || selectedTerm.results) && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-blue-800 mb-4">📊 Real-World Case Study</h3>
+                  
+                  {selectedTerm.client_name && (
+                    <div className="mb-4">
+                      <h4 className="font-semibold text-blue-700 mb-2">Client Profile:</h4>
+                      <p className="text-blue-600">{selectedTerm.client_name}</p>
+                    </div>
+                  )}
+                  
+                  {selectedTerm.structure && (
+                    <div className="mb-4">
+                      <h4 className="font-semibold text-blue-700 mb-2">Structure:</h4>
+                      <p className="text-blue-600">{selectedTerm.structure}</p>
+                    </div>
+                  )}
+                  
+                  {selectedTerm.implementation && (
+                    <div className="mb-4">
+                      <h4 className="font-semibold text-blue-700 mb-2">Implementation:</h4>
+                      <p className="text-blue-600">{selectedTerm.implementation}</p>
+                    </div>
+                  )}
+                  
+                  {selectedTerm.results && (
+                    <div>
+                      <h4 className="font-semibold text-blue-700 mb-2">Results:</h4>
+                      <p className="text-blue-600 font-medium">{selectedTerm.results}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {/* Linked Modules */}
+              {(() => {
+                const linkedModules = getLinkedModules(selectedTerm);
+                return linkedModules.length > 0 ? (
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                    <h3 className="text-xl font-bold text-gray-800 mb-4">📚 Related Learning Modules</h3>
+                    <div className="space-y-2">
+                      {linkedModules.map((module, index) => (
+                        <div key={index} className="flex items-center">
+                          <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
+                          <span className="text-gray-700">{module}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                )}
+                ) : null;
+              })()}
+              
+              {/* Related Terms */}
+              {selectedTerm.related_terms && selectedTerm.related_terms.length > 0 && (
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">🔗 Related Terms</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedTerm.related_terms.map((relatedTerm, index) => (
+                      <span key={index} className="inline-block bg-gray-100 text-gray-700 px-3 py-2 rounded-full text-sm">
+                        {relatedTerm}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* Modal Footer */}
+            <div className="sticky bottom-0 bg-gray-50 px-8 py-4 border-t">
+              <div className="flex justify-between items-center">
+                <div className="text-sm text-gray-600">
+                  {viewedTerms[selectedTerm.id] ? 'You\'ve already earned XP for this term' : 'You earned 10 XP for viewing this term!'}
+                </div>
+                <button 
+                  onClick={() => setSelectedTerm(null)}
+                  className="px-6 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors font-medium"
+                >
+                  Close
+                </button>
               </div>
             </div>
           </div>
