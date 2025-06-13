@@ -503,6 +503,15 @@ function PlaybookGenerator() {
         module: 'Module 2: Entity Optimization',
         description: 'Optimal structure for solo high-income business owners to minimize taxes and enable strategic planning'
       });
+
+      // Add Split Dollar strategy for C-corp users
+      setupStructure.push({
+        id: 'split-dollar-insurance',
+        title: 'Loan-Based Split Dollar Life Insurance',
+        complexity: 'Advanced',
+        module: 'Module 2: Entity Optimization',
+        description: 'Use a loan-based split dollar structure to move retained earnings out of your C-corp and into a tax-advantaged life insurance policy — avoiding dividend taxation while maintaining access to capital.'
+      });
     }
 
     if (data.incomeType === 'business-owner' || data.incomeType === 'blended') {
