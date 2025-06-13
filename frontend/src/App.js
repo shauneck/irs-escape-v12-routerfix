@@ -2085,7 +2085,7 @@ const App = () => {
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/glossary" element={<GlossaryPage />} />
           <Route path="/tools" element={<ToolsPage />} />
-          <Route path="/tools/escape-plan" element={<BuildEscapePlan />} />
+          <Route path="/tools/build-escape-plan" element={<BuildEscapePlan />} />
           <Route path="/tools/entity-builder" element={<EntityBuilder />} />
           {/* Legacy routes for existing functionality */}
           <Route path="/taxbot" element={<TaxBotPage />} />
