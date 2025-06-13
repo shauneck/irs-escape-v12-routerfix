@@ -1519,49 +1519,56 @@ function PlaybookGenerator() {
                   <h2 className="text-3xl font-semibold text-gray-900 mb-2">Financial Details</h2>
                   <p className="text-base text-gray-600 mb-8">Help us calculate more precise forecasting for your situation</p>
 
-                  <div className="max-w-lg mx-auto space-y-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2 text-center">
+                  <div className="max-w-lg mx-auto space-y-8">
+                    <div className="text-center">
+                      <label className="block text-sm font-medium text-gray-700 mb-3">
                         {getIncomeFieldConfig().label}
                       </label>
-                      <input
-                        type="text"
-                        value={formatNumberInput(forecastingData.businessProfit)}
-                        onChange={(e) => handleForecastingChange('businessProfit', e.target.value)}
-                        placeholder={getIncomeFieldConfig().placeholder}
-                        className="w-full max-w-[250px] mx-auto h-10 px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-center"
-                      />
+                      <div className="flex justify-center">
+                        <input
+                          type="text"
+                          value={formatNumberInput(forecastingData.businessProfit)}
+                          onChange={(e) => handleForecastingChange('businessProfit', e.target.value)}
+                          placeholder={getIncomeFieldConfig().placeholder}
+                          className="w-64 h-12 px-4 py-3 border rounded-md text-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-center"
+                        />
+                      </div>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2 text-center">
+                    <div className="text-center">
+                      <label className="block text-sm font-medium text-gray-700 mb-3">
                         Capital available for tax-advantaged investments
                       </label>
-                      <input
-                        type="text"
-                        value={formatNumberInput(forecastingData.capitalAvailable)}
-                        onChange={(e) => handleForecastingChange('capitalAvailable', e.target.value)}
-                        placeholder="e.g., 250,000"
-                        className="w-full max-w-[250px] mx-auto h-10 px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-center"
-                      />
-                      <p className="text-xs text-gray-600 mt-1 text-center">Capital you could invest in real estate, energy credits, etc.</p>
+                      <div className="flex justify-center">
+                        <input
+                          type="text"
+                          value={formatNumberInput(forecastingData.capitalAvailable)}
+                          onChange={(e) => handleForecastingChange('capitalAvailable', e.target.value)}
+                          placeholder="e.g., 250,000"
+                          className="w-64 h-12 px-4 py-3 border rounded-md text-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-center"
+                        />
+                      </div>
+                      <p className="text-xs text-gray-600 mt-2">Capital you could invest in real estate, energy credits, etc.</p>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2 text-center">
-                        Percentage of income that could be restructured or offset
+                    <div className="text-center">
+                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                        What percentage of your income do you need for lifestyle expenses?
                       </label>
-                      <div className="relative max-w-[150px] mx-auto">
-                        <input
-                          type="number"
-                          value={forecastingData.restructurePercent}
-                          onChange={(e) => handleForecastingChange('restructurePercent', e.target.value)}
-                          placeholder="30"
-                          min="0"
-                          max="100"
-                          className="w-full h-10 px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 pr-8 text-center"
-                        />
-                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-600">%</span>
+                      <p className="text-xs text-gray-600 mb-4">(We'll use the rest to explore tax-saving strategies.)</p>
+                      <div className="flex justify-center">
+                        <div className="relative w-32">
+                          <input
+                            type="number"
+                            value={forecastingData.restructurePercent}
+                            onChange={(e) => handleForecastingChange('restructurePercent', e.target.value)}
+                            placeholder="70"
+                            min="0"
+                            max="100"
+                            className="w-full h-12 px-4 py-3 border rounded-md text-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 pr-8 text-center"
+                          />
+                          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-lg text-gray-600">%</span>
+                        </div>
                       </div>
                     </div>
                   </div>
