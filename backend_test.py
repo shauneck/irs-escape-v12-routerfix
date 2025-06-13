@@ -195,12 +195,10 @@ class TestBackendAPI(unittest.TestCase):
                 self.assertEqual(len(lessons), expected_lessons, 
                                 f"Expected {expected_lessons} lessons, got {len(lessons)}")
                 
-                # Verify lessons are ordered correctly (skip for W-2 course due to known issue)
-                if course_type != 'w2':
-                    order_indices = [lesson.get('order_index') for lesson in lessons]
-                    self.assertEqual(sorted(order_indices), order_indices, "Lessons are not in correct order")
-                else:
-                    print("⚠️ Skipping order check for W-2 course due to known order_index issue")
+                # Verify lessons are ordered correctly
+                order_indices = [lesson.get('order_index') for lesson in lessons]
+                self.assertEqual(sorted(order_indices), list(range(len(lessons))), 
+                               f"Lessons are not in correct order or missing indices")
                 
                 # Verify each lesson has the required fields
                 for lesson in lessons:
