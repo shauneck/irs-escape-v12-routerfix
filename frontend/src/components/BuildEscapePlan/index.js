@@ -832,6 +832,9 @@ function PlaybookGenerator() {
       }
     } else if (currentStep === 6 && !formData.receivesStockComp) {
       setCurrentStep(8); // Skip RSU percentage if no stock comp
+    } else if (currentStep === 7) {
+      // After RSU percentage, go to financial details
+      setCurrentStep(8);
     } else if (currentStep < 9) {
       setCurrentStep(currentStep + 1);
     } else if (currentStep === 9) {
