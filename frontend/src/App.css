@@ -438,70 +438,28 @@ textarea:focus-visible {
   outline-offset: 2px;
 }
 
-/* Glossary term styling with teal pill design */
+/* Glossary Term Highlighting Styles for In-Course Content */
 .glossary-term {
-  display: inline-block;
-  background: linear-gradient(135deg, #14b8a6 0%, #0f766e 100%);
-  color: white;
-  font-weight: 700;
-  padding: 4px 12px;
-  border-radius: 20px;
-  margin: 0 2px;
+  background: linear-gradient(120deg, #d1fae5 0%, #a7f3d0 100%);
+  color: #047857;
+  text-decoration: underline;
+  text-decoration-color: #10b981;
+  text-underline-offset: 3px;
   cursor: pointer;
+  font-weight: 500;
+  padding: 1px 2px;
+  border-radius: 3px;
   transition: all 0.2s ease;
-  border: 2px solid transparent;
-  font-size: 0.95em;
 }
 
 .glossary-term:hover {
-  background: linear-gradient(135deg, #0f766e 0%, #0d5c55 100%);
+  background: linear-gradient(120deg, #a7f3d0 0%, #6ee7b7 100%);
+  color: #065f46;
+  text-decoration-color: #059669;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.4);
-  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
 }
 
-.glossary-repeat {
-  position: relative;
-  padding: 2px 6px;
-  border-radius: 4px;
-  border-bottom: 2px dotted #14b8a6;
-  color: #0f766e;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.glossary-repeat:hover {
-  background: rgba(20, 184, 166, 0.1);
-  color: #0d5c55;
-}
-
-.glossary-repeat:hover::after {
-  content: "↑ Jump to definition";
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #0f172a;
-  color: white;
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  white-space: nowrap;
-  z-index: 1000;
-  pointer-events: none;
-  margin-bottom: 4px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.glossary-repeat:hover::before {
-  content: "";
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 5px solid transparent;
-  border-top-color: #0f172a;
-  z-index: 1001;
-  pointer-events: none;
+.glossary-highlighted-content {
+  line-height: 1.7;
 }
