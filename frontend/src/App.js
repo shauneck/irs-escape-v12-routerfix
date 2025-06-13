@@ -635,6 +635,7 @@ const GlossaryTermHighlighter = ({ content, glossaryTerms, onTermClick }) => {
 // GlossarySection Component
 const GlossarySection = ({ glossaryTerms }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCourse, setSelectedCourse] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedTerm, setSelectedTerm] = useState(null);
   const [viewedTerms, setViewedTerms] = useState(() => {
@@ -646,17 +647,136 @@ const GlossarySection = ({ glossaryTerms }) => {
     return saved ? parseInt(saved) : 0;
   });
 
-  const categories = ['all', ...new Set(glossaryTerms?.map(term => term.category) || [])];
+  // Course options for filtering
+  const courses = [
+    'all',
+    'Primer',
+    'W-2 Escape Plan',
+    'Business Owner Escape Plan'
+  ];
+
+  // Category options for filtering
+  const categories = [
+    'all',
+    'Tax Strategy',
+    'Advanced Strategy',
+    'Investment Strategy',
+    'Real Estate Tax',
+    'Business Tax'
+  ];
+
+  // Map glossary terms to their first course appearance
+  const getTermCourse = (termName) => {
+    const termCourseMappings = {
+      // Primer Course Terms
+      'Tax Planning': 'Primer',
+      'CPA vs Strategist': 'Primer',
+      'W-2 Income': 'Primer',
+      'Entity Type': 'Primer',
+      'Income Type': 'Primer',
+      'Timing': 'Primer',
+      'Asset Location': 'Primer',
+      'Deduction Strategy': 'Primer',
+      'Exit Planning': 'Primer',
+      'Tax Strategy': 'Primer',
+      'Wealth Multiplier Loop': 'Primer',
+      'Strategic Compounding': 'Primer',
+      'Tax Lever': 'Primer',
+      'Income Optimization': 'Primer',
+      'Tax Efficiency': 'Primer',
+
+      // W-2 Escape Plan Terms
+      'QOF (Qualified Opportunity Fund)': 'W-2 Escape Plan',
+      'REPS (Real Estate Professional Status)': 'W-2 Escape Plan',
+      'Capital Gains': 'W-2 Escape Plan',
+      'Material Participation': 'W-2 Escape Plan',
+      'STR': 'W-2 Escape Plan',
+      'Bonus Depreciation': 'W-2 Escape Plan',
+      'AGI': 'W-2 Escape Plan',
+      'Effective Tax Rate': 'W-2 Escape Plan',
+      'Entity Planning': 'W-2 Escape Plan',
+      'Income Shifting': 'W-2 Escape Plan',
+      'Timing Arbitrage': 'W-2 Escape Plan',
+      'Tax Timing Arbitrage': 'W-2 Escape Plan',
+      'RSU Planning Window': 'W-2 Escape Plan',
+      'High-Income Threshold': 'W-2 Escape Plan',
+      'Income Repositioning': 'W-2 Escape Plan',
+      'Dollar-Cost Averaging (DCA)': 'W-2 Escape Plan',
+      'Passive Loss Limitation': 'W-2 Escape Plan',
+      '750-Hour Test': 'W-2 Escape Plan',
+      'Audit-Proofing': 'W-2 Escape Plan',
+      'Cost Segregation (Cost Seg)': 'W-2 Escape Plan',
+      'Depreciation Recapture': 'W-2 Escape Plan',
+
+      // Business Owner Escape Plan Terms
+      'MSO (Management Services Organization)': 'Business Owner Escape Plan',
+      'QSBS (Qualified Small Business Stock)': 'Business Owner Escape Plan',
+      'F-Reorg (F Reorganization)': 'Business Owner Escape Plan',
+      'Trust Multiplication Strategy': 'Business Owner Escape Plan',
+      'Deduction Stack': 'Business Owner Escape Plan',
+      'IDC (Intangible Drilling Costs)': 'Business Owner Escape Plan',
+      'Asset Protection': 'Business Owner Escape Plan',
+      'Zero-Tax Income Stack': 'Business Owner Escape Plan',
+      'Split-Dollar Life Insurance': 'Business Owner Escape Plan',
+      'Loan-Based Premium Funding': 'Business Owner Escape Plan',
+      'Estate Tax Exposure': 'Business Owner Escape Plan',
+      'Co-Investment (MSO or Trust)': 'Business Owner Escape Plan',
+      'Installment Sale': 'Business Owner Escape Plan',
+      'C-Corp': 'Business Owner Escape Plan',
+      'S-Corp': 'Business Owner Escape Plan',
+      'LLC': 'Business Owner Escape Plan',
+      'Tax Election': 'Business Owner Escape Plan',
+      'Corporate Tax': 'Business Owner Escape Plan',
+      'Double Taxation': 'Business Owner Escape Plan',
+      'Qualified Small Business Stock': 'Business Owner Escape Plan',
+      'Payroll Tax': 'Business Owner Escape Plan',
+      'Distributions': 'Business Owner Escape Plan',
+      'Multi-Entity': 'Business Owner Escape Plan',
+      'Management Service Organization': 'Business Owner Escape Plan',
+      'Irrevocable Trust': 'Business Owner Escape Plan',
+      'Business Deductions': 'Business Owner Escape Plan',
+      'Ordinary & Necessary': 'Business Owner Escape Plan',
+      'DB Plan': 'Business Owner Escape Plan',
+      'Contribution Limits': 'Business Owner Escape Plan',
+      'Actuarial': 'Business Owner Escape Plan',
+      'RSU': 'Business Owner Escape Plan',
+      'ISO': 'Business Owner Escape Plan',
+      'ESPP': 'Business Owner Escape Plan',
+      '83(b) Election': 'Business Owner Escape Plan',
+      'Capital Gains Deferral': 'Business Owner Escape Plan',
+      'Opportunity Zones': 'Business Owner Escape Plan',
+      'Deferred Compensation': 'Business Owner Escape Plan',
+      'Non-Qualified Plans': 'Business Owner Escape Plan',
+      'Section 199A': 'Business Owner Escape Plan',
+      'ITC': 'Business Owner Escape Plan',
+      'PTC': 'Business Owner Escape Plan',
+      'Energy Credits': 'Business Owner Escape Plan',
+      'Syndications': 'Business Owner Escape Plan',
+      'Section 1202': 'Business Owner Escape Plan',
+      'Qualified Business': 'Business Owner Escape Plan',
+      'Split Dollar': 'Business Owner Escape Plan',
+      'Life Insurance': 'Business Owner Escape Plan',
+      'Retained Earnings': 'Business Owner Escape Plan'
+    };
+
+    return termCourseMappings[termName] || 'Business Owner Escape Plan'; // Default fallback
+  };
   
   const filteredTerms = glossaryTerms?.filter(term => {
     const matchesSearch = term.term.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          term.definition?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          term.plain_english?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const termCourse = getTermCourse(term.term);
+    const matchesCourse = selectedCourse === 'all' || termCourse === selectedCourse;
+    
     const matchesCategory = selectedCategory === 'all' || term.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    
+    return matchesSearch && matchesCourse && matchesCategory;
   }) || [];
 
-  const resetFilter = () => {
+  const resetFilters = () => {
+    setSelectedCourse('all');
     setSelectedCategory('all');
     setSearchTerm('');
   };
@@ -727,8 +847,9 @@ const GlossarySection = ({ glossaryTerms }) => {
 
       {/* Search and Filter Controls */}
       <div className="mb-6">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1">
+        <div className="flex flex-col gap-4">
+          {/* Search Bar - Full Width */}
+          <div className="w-full">
             <div className="relative">
               <input
                 type="text"
@@ -742,32 +863,58 @@ const GlossarySection = ({ glossaryTerms }) => {
               </svg>
             </div>
           </div>
-          <div className="sm:w-64">
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-            >
-              {categories.map(category => (
-                <option key={category} value={category}>
-                  {category === 'all' ? 'All Categories' : category}
-                </option>
-              ))}
-            </select>
+
+          {/* Filters Row */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            {/* Course Filter */}
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Course</label>
+              <select
+                value={selectedCourse}
+                onChange={(e) => setSelectedCourse(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              >
+                {courses.map(course => (
+                  <option key={course} value={course}>
+                    {course === 'all' ? 'All Courses' : course}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Category Filter */}
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Category</label>
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              >
+                {categories.map(category => (
+                  <option key={category} value={category}>
+                    {category === 'all' ? 'All Categories' : category}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Reset Button */}
+            {(selectedCourse !== 'all' || selectedCategory !== 'all' || searchTerm) && (
+              <div className="flex items-end">
+                <button
+                  onClick={resetFilters}
+                  className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors whitespace-nowrap font-medium"
+                >
+                  Reset All Filters
+                </button>
+              </div>
+            )}
           </div>
-          {(selectedCategory !== 'all' || searchTerm) && (
-            <button
-              onClick={resetFilter}
-              className="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors whitespace-nowrap"
-            >
-              Reset Filters
-            </button>
-          )}
         </div>
       </div>
 
       {/* Active Filters Display */}
-      {(selectedCategory !== 'all' || searchTerm) && (
+      {(selectedCourse !== 'all' || selectedCategory !== 'all' || searchTerm) && (
         <div className="mb-4 flex flex-wrap gap-2">
           {searchTerm && (
             <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-emerald-100 text-emerald-700">
@@ -777,10 +924,18 @@ const GlossarySection = ({ glossaryTerms }) => {
               </button>
             </span>
           )}
-          {selectedCategory !== 'all' && (
+          {selectedCourse !== 'all' && (
             <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-700">
+              Course: {selectedCourse}
+              <button onClick={() => setSelectedCourse('all')} className="ml-2 text-blue-500 hover:text-blue-700">
+                ×
+              </button>
+            </span>
+          )}
+          {selectedCategory !== 'all' && (
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-purple-100 text-purple-700">
               Category: {selectedCategory}
-              <button onClick={() => setSelectedCategory('all')} className="ml-2 text-blue-500 hover:text-blue-700">
+              <button onClick={() => setSelectedCategory('all')} className="ml-2 text-purple-500 hover:text-purple-700">
                 ×
               </button>
             </span>
@@ -792,7 +947,7 @@ const GlossarySection = ({ glossaryTerms }) => {
       <div className="mb-6">
         <p className="text-gray-600">
           Showing {filteredTerms.length} of {glossaryTerms?.length || 0} terms
-          {(selectedCategory !== 'all' || searchTerm) && (
+          {(selectedCourse !== 'all' || selectedCategory !== 'all' || searchTerm) && (
             <span className="ml-2 text-sm">
               ({glossaryTerms?.length - filteredTerms.length} filtered out)
             </span>
@@ -802,42 +957,51 @@ const GlossarySection = ({ glossaryTerms }) => {
 
       {/* Terms Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredTerms.map((term, index) => (
-          <div 
-            key={term.id || index}
-            onClick={() => handleTermClick(term)}
-            className={`relative bg-white border-2 rounded-xl p-6 hover:shadow-lg cursor-pointer transition-all duration-200 ${
-              viewedTerms[term.id] ? 'border-emerald-200 bg-emerald-50' : 'border-gray-200 hover:border-emerald-300'
-            }`}
-          >
-            {/* XP Badge */}
-            {viewedTerms[term.id] && (
-              <div className="absolute top-3 right-3">
-                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-500 text-white">
-                  +10 XP
+        {filteredTerms.map((term, index) => {
+          const termCourse = getTermCourse(term.term);
+          return (
+            <div 
+              key={term.id || index}
+              onClick={() => handleTermClick(term)}
+              className={`relative bg-white border-2 rounded-xl p-6 hover:shadow-lg cursor-pointer transition-all duration-200 ${
+                viewedTerms[term.id] ? 'border-emerald-200 bg-emerald-50' : 'border-gray-200 hover:border-emerald-300'
+              }`}
+            >
+              {/* XP Badge */}
+              {viewedTerms[term.id] && (
+                <div className="absolute top-3 right-3">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-500 text-white">
+                    +10 XP
+                  </span>
+                </div>
+              )}
+              
+              <h3 className="font-bold text-navy-900 mb-3 text-lg leading-tight">{term.term}</h3>
+              
+              {/* Course and Category Tags */}
+              <div className="flex flex-wrap gap-2 mb-3">
+                <span className="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium">
+                  {termCourse}
+                </span>
+                <span className="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-medium">
+                  {term.category}
                 </span>
               </div>
-            )}
-            
-            <h3 className="font-bold text-navy-900 mb-3 text-lg leading-tight">{term.term}</h3>
-            
-            <span className="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-medium mb-3">
-              {term.category}
-            </span>
-            
-            <p className="text-gray-600 text-sm line-clamp-3 mb-4">
-              {term.plain_english || term.definition}
-            </p>
-            
-            {term.key_benefit && (
-              <div className="border-t pt-3">
-                <p className="text-xs text-emerald-600 font-medium">
-                  💡 Key Benefit: {term.key_benefit.substring(0, 80)}...
-                </p>
-              </div>
-            )}
-          </div>
-        ))}
+              
+              <p className="text-gray-600 text-sm line-clamp-3 mb-4">
+                {term.plain_english || term.definition}
+              </p>
+              
+              {term.key_benefit && (
+                <div className="border-t pt-3">
+                  <p className="text-xs text-emerald-600 font-medium">
+                    💡 Key Benefit: {term.key_benefit.substring(0, 80)}...
+                  </p>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* No Results */}
