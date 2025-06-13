@@ -236,7 +236,8 @@ class TestBackendAPI(unittest.TestCase):
             print(f"Found {len(terms)} glossary terms")
             
             # Verify we have exactly 53 glossary terms as specified in the requirements
-            self.assertEqual(len(terms), 53, f"Expected exactly 53 glossary terms, got {len(terms)}")
+            self.assertEqual(len(terms), self.expected_glossary_terms_count, 
+                            f"Expected exactly {self.expected_glossary_terms_count} glossary terms, got {len(terms)}")
             
             # Verify glossary terms have the required fields
             required_fields = ['id', 'term', 'definition', 'category']
@@ -270,7 +271,7 @@ class TestBackendAPI(unittest.TestCase):
             for category, count in categories.items():
                 print(f"  {category}: {count} terms")
             
-            # Verify key glossary terms are present
+            # Verify key glossary terms are present (specifically mentioned in review request)
             term_names = [term.get('term').upper() for term in terms]
             for key_term in self.key_glossary_terms:
                 self.assertTrue(any(key_term.upper() in name for name in term_names), 
