@@ -535,6 +535,15 @@ function PlaybookGenerator() {
         module: 'Business Module 3',
         description: 'An MSO allows you to separate operational income from management and intellectual property. This creates opportunities for income reclassification, asset protection, and multi-entity exit planning.'
       });
+
+      // Add Split Dollar strategy for MSO users (involves C-corp structure)
+      setupStructure.push({
+        id: 'split-dollar-insurance',
+        title: 'Loan-Based Split Dollar Life Insurance',
+        complexity: 'Advanced',
+        module: 'Module 2: Entity Optimization',
+        description: 'Use a loan-based split dollar structure to move retained earnings out of your C-corp and into a tax-advantaged life insurance policy — avoiding dividend taxation while maintaining access to capital.'
+      });
     }
 
     if (data.strategyGoals.includes('Asset protection')) {
