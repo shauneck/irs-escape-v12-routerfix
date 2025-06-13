@@ -1789,15 +1789,438 @@ const BuildEscapePlan = () => {
     </div>
   );
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-6 py-12">
-        {currentStep === 1 && renderInputForm()}
-        {currentStep === 2 && renderStrategyDashboard()}
-        {currentStep === 3 && renderStrategyDetails()}
+  // Step 7: Entity Review  
+  const renderStep7 = () => (
+    <div className="max-w-4xl mx-auto">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-bold text-navy-900 mb-4">
+          Step 7: Entity Review
+        </h1>
+        <p className="text-xl text-gray-600">
+          Review and optimize your current business structure
+        </p>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-lg p-8">
+        <h2 className="text-2xl font-bold text-navy-900 mb-6">Current Entity Structure</h2>
+        
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Current Business Structure
+            </label>
+            <select
+              name="currentEntityStructure"
+              value={formData.currentEntityStructure}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+            >
+              <option value="">Select current structure</option>
+              <option value="sole-proprietorship">Sole Proprietorship</option>
+              <option value="single-llc">Single-Member LLC</option>
+              <option value="multi-llc">Multi-Member LLC</option>
+              <option value="partnership">Partnership</option>
+              <option value="s-corp">S-Corporation</option>
+              <option value="c-corp">C-Corporation</option>
+              <option value="none">No formal structure</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          {/* Entity Analysis */}
+          {formData.currentEntityStructure && (
+            <div className="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
+              <h3 className="text-lg font-bold text-navy-900 mb-4">Entity Analysis</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Current Benefits</h4>
+                  <ul className="text-sm text-gray-700 space-y-1">
+                    {formData.currentEntityStructure === 'sole-proprietorship' && (
+                      <>
+                        <li>✓ Simple tax filing</li>
+                        <li>✓ Full business control</li>
+                        <li>✗ Personal liability exposure</li>
+                        <li>✗ Self-employment tax on all income</li>
+                      </>
+                    )}
+                    {formData.currentEntityStructure === 's-corp' && (
+                      <>
+                        <li>✓ Payroll tax savings potential</li>
+                        <li>✓ Pass-through taxation</li>
+                        <li>✗ Reasonable salary requirements</li>
+                        <li>✗ Limited ownership structure</li>
+                      </>
+                    )}
+                    {formData.currentEntityStructure === 'c-corp' && (
+                      <>
+                        <li>✓ Lower corporate tax rates</li>
+                        <li>✓ Retained earnings benefits</li>
+                        <li>✗ Double taxation potential</li>
+                        <li>✗ Complex compliance requirements</li>
+                      </>
+                    )}
+                  </ul>
+                </div>
+                
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Optimization Opportunities</h4>
+                  <ul className="text-sm text-emerald-700 space-y-1">
+                    {formData.currentEntityStructure === 'sole-proprietorship' && (
+                      <>
+                        <li>• Consider LLC for liability protection</li>
+                        <li>• S-Corp election for tax savings</li>
+                        <li>• Business expense optimization</li>
+                      </>
+                    )}
+                    {formData.currentEntityStructure === 's-corp' && parseFormattedNumber(formData.annualIncome) > 500000 && (
+                      <>
+                        <li>• C-Corp MSO structure evaluation</li>
+                        <li>• Advanced deduction strategies</li>
+                        <li>• Retained earnings planning</li>
+                      </>
+                    )}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="flex justify-between mt-8">
+          <button
+            onClick={prevStep}
+            className="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50"
+          >
+            ← Previous
+          </button>
+          <button
+            onClick={nextStep}
+            disabled={!formData.currentEntityStructure}
+            className={`px-8 py-3 rounded-lg font-bold transition-all duration-200 ${
+              formData.currentEntityStructure
+                ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            Continue →
+          </button>
+        </div>
       </div>
     </div>
   );
+
+  // Step 8: Financial Summary
+  const renderStep8 = () => {
+    // Calculate financial summary
+    const annualIncome = parseFormattedNumber(formData.annualIncome);
+    const capitalAvailable = parseFormattedNumber(formData.capitalToAllocate);
+    const stockCompValue = parseFormattedNumber(formData.stockCompValue);
+    
+    const estimatedCurrentTax = annualIncome * 0.25; // Rough estimate
+    const potentialSavings = Math.min(estimatedCurrentTax * 0.4, capitalAvailable * 0.8);
+    
+    return (
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-navy-900 mb-4">
+            Step 8: Financial Summary
+          </h1>
+          <p className="text-xl text-gray-600">
+            Review your financial profile and projected opportunities
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Current Financial Profile */}
+          <div className="bg-white rounded-xl shadow-lg p-8">
+            <h2 className="text-2xl font-bold text-navy-900 mb-6">Current Financial Profile</h2>
+            
+            <div className="space-y-4">
+              <div className="flex justify-between items-center py-3 border-b border-gray-200">
+                <span className="text-gray-600">Income Type:</span>
+                <span className="font-semibold text-navy-900 capitalize">
+                  {formData.incomeType === 'w2' ? 'W-2 Employee' : 
+                   formData.incomeType === 'mixed' ? 'Mixed Income' : 'Business Owner'}
+                </span>
+              </div>
+              
+              <div className="flex justify-between items-center py-3 border-b border-gray-200">
+                <span className="text-gray-600">Annual Income:</span>
+                <span className="font-semibold text-navy-900">${formData.annualIncome}</span>
+              </div>
+              
+              <div className="flex justify-between items-center py-3 border-b border-gray-200">
+                <span className="text-gray-600">Capital Available:</span>
+                <span className="font-semibold text-navy-900">${formData.capitalToAllocate}</span>
+              </div>
+              
+              {formData.hasStockCompensation && (
+                <div className="flex justify-between items-center py-3 border-b border-gray-200">
+                  <span className="text-gray-600">Stock Compensation:</span>
+                  <span className="font-semibold text-navy-900">${formData.stockCompValue}</span>
+                </div>
+              )}
+              
+              <div className="flex justify-between items-center py-3 border-b border-gray-200">
+                <span className="text-gray-600">Restructure Percentage:</span>
+                <span className="font-semibold text-navy-900">{formData.restructurePercentage}%</span>
+              </div>
+              
+              <div className="flex justify-between items-center py-3">
+                <span className="text-gray-600">Entity Structure:</span>
+                <span className="font-semibold text-navy-900 capitalize">
+                  {formData.currentEntityStructure?.replace('-', ' ') || 'None'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Projected Opportunities */}
+          <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200 rounded-xl p-8">
+            <h2 className="text-2xl font-bold text-emerald-900 mb-6">Projected Opportunities</h2>
+            
+            <div className="space-y-6">
+              <div className="bg-white rounded-lg p-4">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-emerald-600 mb-2">
+                    ${potentialSavings.toLocaleString()}
+                  </div>
+                  <div className="text-sm text-gray-600">Estimated Annual Tax Savings</div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-white rounded-lg p-4 text-center">
+                  <div className="text-xl font-bold text-navy-900">{formData.forecastTimeHorizon}</div>
+                  <div className="text-xs text-gray-600">Year Projection</div>
+                </div>
+                <div className="bg-white rounded-lg p-4 text-center">
+                  <div className="text-xl font-bold text-navy-900">{formData.returnRate}%</div>
+                  <div className="text-xs text-gray-600">Expected Return</div>
+                </div>
+              </div>
+              
+              <div className="bg-white rounded-lg p-4">
+                <h3 className="font-bold text-gray-900 mb-2">Strategy Alignment</h3>
+                <div className="space-y-2">
+                  {formData.primaryGoals.slice(0, 3).map((goal, index) => (
+                    <div key={index} className="flex items-center text-sm">
+                      <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
+                      <span className="text-gray-700 capitalize">{goal.replace('-', ' ')}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-between mt-8">
+          <button
+            onClick={prevStep}
+            className="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50"
+          >
+            ← Previous
+          </button>
+          <button
+            onClick={nextStep}
+            className="px-8 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-bold transition-all duration-200"
+          >
+            Generate Strategy Recommendations →
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  // Step 9: Strategy Recommendations
+  const renderStep9 = () => {
+    // Generate strategies based on user profile
+    const generatedStrategies = generateStrategies();
+    
+    return (
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-navy-900 mb-4">
+            Step 9: Your Personalized Strategy Recommendations
+          </h1>
+          <p className="text-xl text-gray-600">
+            Complete implementation roadmap with wealth projections
+          </p>
+        </div>
+
+        {/* Wealth Multiplier Loop Visualization */}
+        <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl p-8 text-white mb-8">
+          <h2 className="text-3xl font-bold text-center mb-8">Wealth Multiplier Loop</h2>
+          
+          <div className="flex items-center justify-between max-w-4xl mx-auto">
+            <div className="text-center">
+              <div className="w-24 h-24 bg-white text-emerald-600 rounded-full flex items-center justify-center font-bold text-lg mb-4">
+                Step 1
+              </div>
+              <div className="text-emerald-100">Tax Savings</div>
+              <div className="text-2xl font-bold">${(parseFormattedNumber(formData.annualIncome) * 0.1).toLocaleString()}</div>
+            </div>
+            
+            <div className="text-4xl">→</div>
+            
+            <div className="text-center">
+              <div className="w-24 h-24 bg-white text-emerald-600 rounded-full flex items-center justify-center font-bold text-lg mb-4">
+                Step 2
+              </div>
+              <div className="text-emerald-100">Reinvestment</div>
+              <div className="text-2xl font-bold">{formData.returnRate}% Return</div>
+            </div>
+            
+            <div className="text-4xl">→</div>
+            
+            <div className="text-center">
+              <div className="w-24 h-24 bg-white text-emerald-600 rounded-full flex items-center justify-center font-bold text-lg mb-4">
+                Step 3
+              </div>
+              <div className="text-emerald-100">Compounding</div>
+              <div className="text-2xl font-bold">{formData.forecastTimeHorizon} Years</div>
+            </div>
+            
+            <div className="text-4xl">→</div>
+            
+            <div className="text-center">
+              <div className="w-24 h-24 bg-white text-emerald-600 rounded-full flex items-center justify-center font-bold text-lg mb-4">
+                Result
+              </div>
+              <div className="text-emerald-100">Future Value</div>
+              <div className="text-2xl font-bold">
+                ${(parseFormattedNumber(formData.annualIncome) * 0.1 * Math.pow(1 + formData.returnRate / 100, formData.forecastTimeHorizon)).toLocaleString()}
+              </div>
+            </div>
+          </div>
+          
+          <div className="text-center mt-8">
+            <button className="bg-white text-emerald-600 px-4 py-2 rounded-lg font-medium hover:bg-gray-100 inline-flex items-center">
+              <span className="mr-2">ℹ️</span>
+              View Detailed Assumptions
+            </button>
+          </div>
+        </div>
+
+        {/* Strategy Stack */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+          {Object.entries(generatedStrategies).map(([category, categoryStrategies]) => (
+            <div key={category} className="bg-white rounded-xl shadow-lg p-6">
+              <h3 className="text-xl font-bold text-navy-900 mb-4 capitalize">
+                {category === 'setup' ? 'Setup & Structure' : 
+                 category === 'deductions' ? 'Deduction Strategies' : 'Exit Planning'}
+              </h3>
+              
+              <div className="space-y-4">
+                {categoryStrategies.map((strategy, index) => (
+                  <div key={index} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="font-semibold text-gray-900">{strategy.title}</h4>
+                      <span className={`px-2 py-1 rounded text-xs ${
+                        strategy.complexity === 'Beginner' ? 'bg-green-100 text-green-600' :
+                        strategy.complexity === 'Intermediate' ? 'bg-yellow-100 text-yellow-600' :
+                        'bg-red-100 text-red-600'
+                      }`}>
+                        {strategy.complexity}
+                      </span>
+                    </div>
+                    
+                    <p className="text-sm text-gray-600 mb-3">{strategy.description}</p>
+                    
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-xs text-gray-500">Implementation Status</span>
+                      <select
+                        value={implementationStatus[strategy.id] || 'not-started'}
+                        onChange={(e) => handleStrategyStatusChange(strategy.id, e.target.value)}
+                        className="text-xs border border-gray-300 rounded px-2 py-1"
+                      >
+                        <option value="not-started">Not Started</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="complete">Complete</option>
+                      </select>
+                    </div>
+                    
+                    <div className="text-xs text-emerald-600 font-medium">
+                      Max Savings: ${strategy.maxSavings?.toLocaleString()}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Implementation Tracker */}
+        <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+          <h2 className="text-2xl font-bold text-navy-900 mb-6">Implementation Tracker</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-emerald-600">
+                {Object.values(implementationStatus).filter(status => status === 'complete').length}
+              </div>
+              <div className="text-gray-600">Strategies Complete</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-yellow-600">
+                {Object.values(implementationStatus).filter(status => status === 'in-progress').length}
+              </div>
+              <div className="text-gray-600">In Progress</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-gray-600">
+                {Object.values(implementationStatus).filter(status => status === 'not-started').length}
+              </div>
+              <div className="text-gray-600">Not Started</div>
+            </div>
+          </div>
+          
+          <div className="w-full bg-gray-200 rounded-full h-4 mb-4">
+            <div 
+              className="bg-emerald-500 h-4 rounded-full transition-all duration-500"
+              style={{ 
+                width: `${Object.values(implementationStatus).length > 0 ? 
+                  (Object.values(implementationStatus).filter(status => status === 'complete').length / 
+                   Object.values(implementationStatus).length) * 100 : 0}%` 
+              }}
+            ></div>
+          </div>
+          
+          <div className="text-center text-gray-600">
+            {Object.values(implementationStatus).length > 0 ? 
+              Math.round((Object.values(implementationStatus).filter(status => status === 'complete').length / 
+                         Object.values(implementationStatus).length) * 100) : 0}% Complete
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex justify-between">
+          <button
+            onClick={prevStep}
+            className="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50"
+          >
+            ← Previous
+          </button>
+          <div className="space-x-4">
+            <button
+              onClick={() => setCurrentStep(1)}
+              className="px-6 py-3 border border-emerald-500 text-emerald-600 rounded-lg font-medium hover:bg-emerald-50"
+            >
+              Start Over
+            </button>
+            <button
+              onClick={() => alert('Your escape plan has been saved! Implementation guidance will be sent to your email.')}
+              className="px-8 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-bold"
+            >
+              Save My Escape Plan
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 };
 
 export default BuildEscapePlan;
