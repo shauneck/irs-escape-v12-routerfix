@@ -848,7 +848,14 @@ function PlaybookGenerator() {
 
   const prevStep = () => {
     // Handle reverse navigation with conditional steps
-    if (currentStep === 8) {
+    if (currentStep === 5) {
+      // Going back from strategy goals
+      if (formData.incomeType === 'w2-employee' || formData.incomeType === '1099-contractor') {
+        setCurrentStep(3); // Skip Step 4 for W-2 and 1099 only users
+      } else {
+        setCurrentStep(4); // Go back to business partners for business owners and mixed
+      }
+    } else if (currentStep === 8) {
       if (formData.incomeType === 'business-owner') {
         setCurrentStep(5); // Skip stock comp steps for business owners
       } else if (!formData.receivesStockComp) {
@@ -859,17 +866,7 @@ function PlaybookGenerator() {
     } else if (currentStep === 7) {
       setCurrentStep(6); // Go back to stock comp question
     } else if (currentStep === 6) {
-      if (formData.incomeType === 'w2-employee') {
-        setCurrentStep(5); // Skip business partners for W-2
-      } else {
-        setCurrentStep(5); // Go back to strategy goals
-      }
-    } else if (currentStep === 5) {
-      if (formData.incomeType === 'w2-employee') {
-        setCurrentStep(3); // Skip business partners for W-2
-      } else {
-        setCurrentStep(4); // Go back to business partners
-      }
+      setCurrentStep(5); // Go back to strategy goals
     } else if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
