@@ -5,24 +5,40 @@ const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 const BuildEscapePlan = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
-    // Basic Info
-    income: '',
+    // Step 1: Income Type
     incomeType: 'w2',
-    currentTaxRate: '',
-    age: '',
-    retirementAge: 65,
     
-    // Goals & Situation
-    goals: [],
-    currentStrategies: [],
-    realEstateStatus: 'none',
-    businessOwnership: 'none',
-    investmentProfile: 'moderate',
+    // Step 2: Business Partner Logic (conditional)
+    hasBusinessPartner: false,
+    partnerStructure: '',
     
-    // Forecast Settings
+    // Step 3: Capital to Allocate
+    annualIncome: '',
+    capitalToAllocate: '',
+    
+    // Step 4: Restructure % Field
+    restructurePercentage: '',
+    
+    // Step 5: Strategy Goal Selection
+    primaryGoals: [],
+    timeframe: 'short-term',
+    
+    // Step 6: Forecast Settings
+    forecastTimeHorizon: 10,
     returnRate: 6,
-    reinvestmentEnabled: true,
-    timeHorizon: 30
+    reinvestTaxSavings: true,
+    
+    // Step 7: Entity Review
+    currentEntityStructure: '',
+    hasStockCompensation: false,
+    stockCompValue: '',
+    
+    // Step 8: Financial Summary (calculated)
+    currentTaxBill: 0,
+    projectedSavings: 0,
+    
+    // Step 9: Strategy Recommendations (generated)
+    selectedStrategies: []
   });
 
   const [forecastData, setForecastData] = useState(null);
