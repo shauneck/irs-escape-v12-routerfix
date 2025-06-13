@@ -1778,7 +1778,7 @@ const ToolsPage = () => {
       secondLine: 'AI-powered analysis with comprehensive implementation roadmap',
       icon: 'lightning-bolt',
       status: 'premium',
-      route: '/tools/escape-plan'
+      route: '/tools/build-escape-plan'
     },
     {
       id: 'roth-optimizer',
