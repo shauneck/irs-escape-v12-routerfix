@@ -459,6 +459,13 @@ class TestBackendAPI(unittest.TestCase):
         print("\n=== Testing XP System ===")
         
         try:
+            # Test default user XP endpoint
+            default_xp_response = requests.get(urljoin(self.base_url, 'users/xp'))
+            self.assertEqual(default_xp_response.status_code, 200, "Failed to get default user XP")
+            
+            default_xp = default_xp_response.json()
+            print(f"Default user XP: {default_xp.get('total_xp', 0)}")
+            
             # Get initial XP for test user
             response = requests.get(urljoin(self.base_url, f'users/xp/{self.test_user_id}'))
             self.assertEqual(response.status_code, 200, "Failed to get initial XP")
