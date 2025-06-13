@@ -1014,9 +1014,9 @@ const GlossarySection = ({ glossaryTerms }) => {
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">No terms found</h3>
           <p className="text-gray-500 mb-4">Try adjusting your search or filter criteria.</p>
-          {(selectedCategory !== 'all' || searchTerm) && (
+          {(selectedCourse !== 'all' || selectedCategory !== 'all' || searchTerm) && (
             <button
-              onClick={resetFilter}
+              onClick={resetFilters}
               className="text-emerald-600 hover:text-emerald-700 font-medium"
             >
               Clear all filters
